@@ -53,4 +53,7 @@ attribute :tcp_keepalive, kind_of: Integer
 attribute :tcp_keepidle, kind_of: Integer
 attribute :tcp_keepintvl, kind_of: Integer
 
+attribute :soft_limit, kind_of: Integer, default: 65_000
+attribute :hard_limit, kind_of: Integer, default: 65_000
+
 attribute :additional, kind_of: Hash, default: {}

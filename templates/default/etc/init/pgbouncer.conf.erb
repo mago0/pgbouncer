@@ -12,6 +12,7 @@ pre-start script
     chown $USER:$USER $RUNDIR || true
 end script
 
+limit nofile <%= @soft_limit %> <%= @hard_limit %>
 expect daemon
 respawn
 
