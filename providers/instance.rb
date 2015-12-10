@@ -58,7 +58,8 @@ action :setup do
   # install the pgbouncer package
   #
   package 'pgbouncer' do
-    action [:install, :upgrade]
+    version node['pgbouncer']['version']
+    action :install
   end
 
   service "pgbouncer-#{new_resource.instance_name}" do
