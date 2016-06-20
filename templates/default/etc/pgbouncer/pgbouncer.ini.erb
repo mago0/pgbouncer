@@ -87,7 +87,7 @@ server_reset_query = <%= @server_reset_query %>
  
 ; If server was used more recently that this many seconds ago,
 ; skip the check query.  Value 0 may or may not run in immediately.
-;server_check_delay = 30
+server_check_delay = <%= @server_check_delay %>
  
 ;;;
 ;;; Connection limits
@@ -106,7 +106,7 @@ min_pool_size = <%= @min_pool_size %>
 reserve_pool_size = <%= @reserve_pool_size %>
  
 ; if a clients needs to wait more than this many seconds, use reserve pool
-;reserve_pool_timeout = 3
+reserve_pool_timeout = <%= @reserve_pool_timeout %>
  
 ; log if client connects or server connection is made
 ;log_connections = <%#= @log_connections %>
@@ -119,7 +119,7 @@ reserve_pool_size = <%= @reserve_pool_size %>
  
  
 ; If off, then server connections are reused in LIFO manner
-server_round_robin = 1
+server_round_robin = <%= @server_round_robin %>
  
 ;;;
 ;;; Timeouts

@@ -35,16 +35,20 @@ attribute :group, :kind_of => String, :default => 'pgbouncer'
 attribute :log_dir, :kind_of => String, :default => '/var/log/pgbouncer'
 attribute :socket_dir, :kind_of => String, :default => '/etc/pgbouncer/db_sockets'
 attribute :pid_dir, :kind_of => String, :default => '/var/run/pgbouncer'
+attribute :connect_query, :kind_of => String
 
 attribute :pool_mode, :kind_of => String, :default => 'transaction'
 attribute :max_client_conn, :kind_of => Integer, :default => 60
 attribute :default_pool_size, :kind_of => Integer, :default => 30
 attribute :min_pool_size, :kind_of => Integer, :default => 10
 attribute :reserve_pool_size, :kind_of => Integer, :default => 5
-attribute :server_idle_timeout, :kind_of => Integer, :default => 3600
+attribute :reserve_pool_timeout, :kind_of => Float, :default => 5.0
+attribute :server_round_robin, :kind_of => Integer, :default => 0
 
 attribute :server_reset_query, :kind_of => String
-attribute :connect_query, :kind_of => String
+attribute :server_check_delay, :kind_of => Integer, :default => 30
+attribute :server_idle_timeout, :kind_of => Integer, :default => 3600
+
 attribute :tcp_keepalive, :kind_of => Integer
 attribute :tcp_keepidle, :kind_of => Integer
 attribute :tcp_keepintvl, :kind_of => Integer
