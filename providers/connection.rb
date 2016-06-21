@@ -60,7 +60,8 @@ action :setup do
   # install the pgbouncer package
   #
   package 'pgbouncer' do
-    action [:install, :upgrade]
+    action [:install]
+    options '-o Dpkg::Options::="--force-confold"'
   end
 
   service "pgbouncer-#{new_resource.db_alias}" do
