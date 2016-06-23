@@ -64,6 +64,20 @@ action :setup do
     options '-o Dpkg::Options::="--force-confold"'
   end
 
+  # Stop the default init.d service as installed by the package
+  service "pgbouncer" do
+    supports :stop => true, :disable => true
+    action [:stop, :disable]
+  end
+
+  # Delete the default package configs
+  file "/etc/pgbouncer/pgbouncer.ini" do
+    action :delete
+  end
+  file "/etc/pgbouncer/userlist.txt" do
+    action :delete
+  end
+
   service "pgbouncer-#{new_resource.db_alias}" do
     provider Chef::Provider::Service::Upstart
     supports :enable => true, :start => true, :restart => true
