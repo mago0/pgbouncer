@@ -118,9 +118,18 @@ action :setup do
     memo
   end
 
-  # build the userlist, pgbouncer.ini, upstart conf and logrotate.d templates
+  template "/etc/pgbouncer/userlist-#{new_resource.db_alias}.txt" do
+    cookbook 'pgbouncer'
+    source 'etc/pgbouncer/userlist.txt.erb'
+    owner new_resource.user
+    group new_resource.group
+    mode 0640
+    notifies :restart, "service[pgbouncer-#{new_resource.db_alias}]"
+    variables(properties)
+  end
+
+  # build the pgbouncer.ini, upstart conf and logrotate.d templates
   {
-    "/etc/pgbouncer/userlist-#{new_resource.db_alias}.txt" => 'etc/pgbouncer/userlist.txt.erb',
     "/etc/pgbouncer/pgbouncer-#{new_resource.db_alias}.ini" => 'etc/pgbouncer/pgbouncer.ini.erb',
     "/etc/init/pgbouncer-#{new_resource.db_alias}.conf" => 'etc/init/pgbouncer.conf.erb',
     "/etc/logrotate.d/pgbouncer-#{new_resource.db_alias}" => 'etc/logrotate.d/pgbouncer-logrotate.d.erb'
