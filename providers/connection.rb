@@ -101,23 +101,6 @@ action :setup do
     end
   end
 
-  # resources only surface defaults when actually hitting accessors
-  # so we need to fetch them explicitly...
-  # This is somewhat ugly and could break but Chef seems to generate
-  # _set_or_return_* methods for every attribute, so iterating over
-  # the methods seems to be the best way to find the declared attributes
-  #
-  properties = new_resource.methods.inject({}) do |memo, method|
-    next memo unless method.to_s =~ /\_set\_or\_return_.*/
-
-    property = method.to_s.gsub("_set_or_return_","")
-    value = new_resource.send(property.to_sym)
-    next memo if value.nil?
-
-    memo[property] = value
-    memo
-  end
-
   template "/etc/pgbouncer/userlist-#{new_resource.db_alias}.txt" do
     cookbook 'pgbouncer'
     source 'etc/pgbouncer/userlist.txt.erb'
@@ -125,7 +108,9 @@ action :setup do
     group new_resource.group
     mode 0640
     notifies :restart, "service[pgbouncer-#{new_resource.db_alias}]"
-    variables(properties)
+    variables(
+      userlist: new_resource.userlist
+    )
   end
 
   # build the pgbouncer.ini, upstart conf and logrotate.d templates
@@ -138,6 +123,39 @@ action :setup do
     ## key is frozen and immutable.
     destination_file = key.dup
 
+    template_variables = {
+        user: new_resource.user,
+        pid_dir: new_resource.pid_dir,
+        db_alias: new_resource.db_alias,
+        db_host: new_resource.db_host,
+        db_port: new_resource.db_port,
+        db_name: new_resource.db_name,
+        connect_query: new_resource.connect_query,
+        log_dir: new_resource.log_dir,
+        listen_addr: new_resource.listen_addr,
+        listen_port: new_resource.listen_port,
+        socket_dir: new_resource.socket_dir,
+        pool_mode: new_resource.pool_mode,
+        server_reset_query: new_resource.server_reset_query,
+        server_check_delay: new_resource.server_check_delay,
+        max_client_conn: new_resource.max_client_conn,
+        default_pool_size: new_resource.default_pool_size,
+        min_pool_size: new_resource.min_pool_size,
+        reserve_pool_size: new_resource.reserve_pool_size,
+        reserve_pool_timeout: new_resource.reserve_pool_timeout,
+        server_round_robin: new_resource.server_round_robin,
+        server_idle_timeout: new_resource.server_idle_timeout,
+    }
+    unless new_resource.tcp_keepalive.nil?
+      template_variables[:tcp_keepalive] = new_resource.tcp_keepalive
+    end
+    unless new_resource.tcp_keepidle.nil?
+      template_variables[:tcp_keepidle] = new_resource.tcp_keepidle
+    end
+    unless new_resource.tcp_keepintvl.nil?
+      template_variables[:tcp_keepintvl] = new_resource.tcp_keepintvl
+    end
+
     template destination_file do
       cookbook 'pgbouncer'
       source source_template
@@ -145,7 +163,7 @@ action :setup do
       group new_resource.group
       mode 0644
       notifies :restart, "service[pgbouncer-#{new_resource.db_alias}]"
-      variables(properties)
+      variables(template_variables)
     end
   end
 
